@@ -90,5 +90,8 @@ class Users(Base):
     role = relationship("Roles",back_populates="user")
     created_at = Column(DateTime(timezone=True), default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    shop = relationship("Shops",back_populates="user")
+    creator = relationship("Products",back_populates="user")
+
 
 
