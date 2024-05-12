@@ -31,10 +31,10 @@ from products.schemas import schema
 from users.schemas import user_sch
 
 
-Products = APIRouter()
+ProductRouter = APIRouter()
 
 
-@Products.post('/v1/shops', summary="Create Shop", tags=["Shops"],response_model=schema.ShopsList)
+@ProductRouter.post('/v1/shops', summary="Create Shop", tags=["Shops"],response_model=schema.ShopsList)
 async def creat_shop(
         form_data:schema.Shopcreate,
         db: Session = Depends(get_db),
@@ -46,7 +46,7 @@ async def creat_shop(
 
 
 
-@Products.put('/v1/shops', summary=" Update Shop", tags=["Shops"], response_model=schema.ShopsList)
+@ProductRouter.put('/v1/shops', summary=" Update Shop", tags=["Shops"], response_model=schema.ShopsList)
 async def update_shop(
         form_data:schema.Shopupdate,
         db: Session = Depends(get_db),
@@ -55,7 +55,7 @@ async def update_shop(
     query = crud.update_shop(db=db, form_data=form_data)
     return query
 
-@Products.get('/v1/shops', summary="Get all shops", tags=["Shops"], response_model=Page[schema.ShopsList])
+@ProductRouter.get('/v1/shops', summary="Get all shops", tags=["Shops"], response_model=Page[schema.ShopsList])
 async def get_shops(
         name:Optional[str]=None,
         id:Optional[int]=None,
@@ -69,7 +69,7 @@ async def get_shops(
 
 
 
-@Products.get('/v1/countries', summary="Get all countries", tags=["Countries"], response_model=Page[schema.CountriesList])
+@ProductRouter.get('/v1/countries', summary="Get all countries", tags=["Countries"], response_model=Page[schema.CountriesList])
 async def get_countries(
         name:Optional[str]=None,
         id:Optional[int]=None,
@@ -79,7 +79,7 @@ async def get_countries(
     countries = crud.get_country(db=db,name=name,id=id,status=status)
     return paginate(countries)
 
-@Products.post('/v1/countries', summary="Create country", tags=["Countries"], response_model=schema.CountriesList)
+@ProductRouter.post('/v1/countries', summary="Create country", tags=["Countries"], response_model=schema.CountriesList)
 async def create_country(
         form_data:schema.CountriesCreate,
         db: Session = Depends(get_db),
@@ -88,7 +88,7 @@ async def create_country(
 
 
 
-@Products.put('/v1/countries', summary="Update country", tags=["Countries"], response_model=schema.CountriesList)
+@ProductRouter.put('/v1/countries', summary="Update country", tags=["Countries"], response_model=schema.CountriesList)
 async def update_country(
         form_data:schema.CountriesUpdate,
         db: Session = Depends(get_db),
@@ -109,7 +109,7 @@ async def get_regions(
     regions = crud.get_region(db=db,name=name,id=id,status=status,country_id=country_id)
     return paginate(regions)
 
-@Products.post('/v1/regions', summary="Create region", tags=["Countries"], response_model=schema.RegionsList)
+@ProductRouter.post('/v1/regions', summary="Create region", tags=["Countries"], response_model=schema.RegionsList)
 async def create_region(
         form_data:schema.RegionsCreate,
         db: Session = Depends(get_db),
@@ -117,7 +117,7 @@ async def create_region(
     return crud.create_region(db=db,form_data=form_data)
 
 
-@Products.put('/v1/regions',summary='Update region',tags=['Countries'],response_model=schema.UpdateRegion)
+@ProductRouter.put('/v1/regions',summary='Update region',tags=['Countries'],response_model=schema.UpdateRegion)
 async def update_region(
         form_data:schema.UpdateRegion,
         db: Session = Depends(get_db),
