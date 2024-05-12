@@ -98,7 +98,7 @@ async def update_country(
 
 
 
-@Products.get('/v1/regions', summary="Get all regions", tags=["Countries"], response_model=Page[schema.RegionsList])
+@ProductRouter.get('/v1/regions', summary="Get all regions", tags=["Countries"], response_model=Page[schema.RegionList])
 async def get_regions(
         name:Optional[str]=None,
         id:Optional[int]=None,
@@ -106,12 +106,12 @@ async def get_regions(
         country_id:Optional[int]=None,
         db: Session = Depends(get_db),
         current_user: user_sch.User = Depends(get_current_user)):
-    regions = crud.get_region(db=db,name=name,id=id,status=status,country_id=country_id)
+    regions = crud.get_regions(db=db,name=name,id=id,status=status,country_id=country_id)
     return paginate(regions)
 
-@ProductRouter.post('/v1/regions', summary="Create region", tags=["Countries"], response_model=schema.RegionsList)
+@ProductRouter.post('/v1/regions', summary="Create region", tags=["Countries"], response_model=schema.RegionList)
 async def create_region(
-        form_data:schema.RegionsCreate,
+        form_data:schema.CreateRegion,
         db: Session = Depends(get_db),
         current_user: user_sch.User = Depends(get_current_user)):
     return crud.create_region(db=db,form_data=form_data)
