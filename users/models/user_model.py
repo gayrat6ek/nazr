@@ -91,7 +91,7 @@ class Users(Base):
     created_at = Column(DateTime(timezone=True), default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     shop = relationship("Shops",back_populates="user")
-    creator = relationship("Products",back_populates="user")
+    product = relationship("Products",back_populates="creator")
 
 
 

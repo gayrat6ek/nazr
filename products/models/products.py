@@ -44,7 +44,7 @@ class Countries(Base):
     name_uz = Column(String, nullable=True)
     name_ru = Column(String, nullable=True)
     status = Column(Integer,default=1)
-    region = relationship("Countries",back_populates="country")
+    region = relationship("Regions",back_populates="country")
     created_at = Column(DateTime(timezone=True), default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
