@@ -49,7 +49,6 @@ class Roles(BaseModel):
 class User(BaseModel):
     id: int
     name: Optional[str] = None
-    phone_number: Optional[str] = None
     username: Optional[str] = None
     role_id: Optional[int] = None
     surname: Optional[str] = None

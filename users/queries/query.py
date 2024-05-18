@@ -26,7 +26,7 @@ def get_user_byphone(db: Session, username:Optional[str]=None):
         query = query.filter(Users.username == username)
     return query.first()
 
-def user_create(db: Session,username,password,name,surname,phone_number,photo,notification,language,status,email,otp):
+def user_create(db: Session,username,password,name,surname,photo,notification,language,status,email,otp):
     hashed_password = hash_password(password)
 
     db_user = Users(
@@ -34,7 +34,6 @@ def user_create(db: Session,username,password,name,surname,phone_number,photo,no
         password=hashed_password,
         name=name,
         surname=surname,
-        phone_number=phone_number,
         photo=photo,
         notification=notification,
         language=language,
@@ -47,14 +46,14 @@ def user_create(db: Session,username,password,name,surname,phone_number,photo,no
     db.refresh(db_user)
     return db_user
 
-def user_update(db:Session,id:int,status:Optional[int]=None,password:Optional[str]=None,phone_number:Optional[str]=None,name:Optional[str]=None,surname:Optional[str]=None,language:Optional[str]=None,photo:Optional[str]=None,notification:Optional[bool]=None,otp:Optional[int]=None):
+def user_update(db:Session,id:int,status:Optional[int]=None,password:Optional[str]=None,username:Optional[str]=None,name:Optional[str]=None,surname:Optional[str]=None,language:Optional[str]=None,photo:Optional[str]=None,notification:Optional[bool]=None,otp:Optional[int]=None):
     db_user = db.query(Users).filter(Users.id == id).first()
     if status is not None:
         db_user.status = status
     if password is not None:
         db_user.password = hash_password(password)
-    if phone_number is not None:
-        db_user.phone_number = phone_number
+    if username is not None:
+        db_user.username = username
     if name is not None:
         db_user.name = name
     if surname is not None:
@@ -71,14 +70,12 @@ def user_update(db:Session,id:int,status:Optional[int]=None,password:Optional[st
     db.refresh(db_user)
     return db_user
 
-def get_users(db: Session,name,id,phone_number,status,role_id):
+def get_users(db: Session,name,id,status,role_id):
     query = db.query(Users)
     if name is not None:
         query = query.filter(Users.name.ilike(f"%{name}%"))
     if id is not None:
         query = query.filter(Users.id == id)
-    if phone_number is not None:
-        query = query.filter(Users.phone_number.ilike(f"%{phone_number}%"))
     if status is not None:
         query = query.filter(Users.status == status)
     if role_id is not None:

@@ -84,7 +84,6 @@ async def register(
     username:Annotated[str, Form()],
     password:Annotated[str, Form()],
     name:Annotated[str, Form()]=None,
-    phone_number:Annotated[str, Form()]=None,
     surname:Annotated[str, Form()]=None,
     language:Annotated[str, Form()]=None,
     email :Annotated[str,Form()]=None,
@@ -104,7 +103,7 @@ async def register(
 
     #get_user = query.get_user_byphone(db, email=form_data.email,phone_number=form_data.phone)
     #if get_user:
-    user = query.user_create(db=db,username=username,password=password,name=name,surname=surname,phone_number=phone_number,photo=photo,notification=notification,language=language,status=0,email=email,otp=otp)
+    user = query.user_create(db=db,username=username,password=password,name=name,surname=surname,photo=photo,notification=notification,language=language,status=0,email=email,otp=otp)
 
     #current_user: user_sch.User = Depends(get_current_user)
     return user
@@ -119,8 +118,6 @@ async def reset_password(
     username:Annotated[str, Form()],
     password:Annotated[str, Form()],
     name:Annotated[str, Form()]=None,
-    phone_number:Annotated[str, Form()]=None,
-    
     surname:Annotated[str, Form()]=None,
     language:Annotated[str, Form()]=None,
     photo:UploadFile = None,
@@ -141,10 +138,9 @@ async def reset_password(
         photo = folder_name
     query.user_update(db=db,
                       id=current_user.id,
-                      username=username,
                       password=password,
                       name=name,
-                      phone_number=phone_number,
+                      username=username,
                       surname=surname,
                       language=language,
                       photo=photo,
