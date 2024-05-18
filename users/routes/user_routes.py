@@ -39,6 +39,8 @@ async def login(
     form_data: OAuth2PasswordRequestForm = Depends(OAuth2PasswordRequestForm),
     db: Session = Depends(get_db),
 ):
+    form_data.username = form_data.username.replace(" ","")
+    form_data.username = form_data.username.replace("+","")
     user = query.get_user(db, form_data.username)
     if user is None or user.status == 0:
         raise HTTPException(
