@@ -57,7 +57,7 @@ async def login(
     return {
         "access_token": create_access_token(user.username),
         "refresh_token": create_refresh_token(user.username),
-        "user": user
+        "user": {'id':user.id,'name':user.name,'surname':user.surname,'username':user.username,'photo':user.photo,'notification':user.notification,'language':user.language,'status':user.status,}
     }
 
 
