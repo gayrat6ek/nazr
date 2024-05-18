@@ -53,6 +53,8 @@ def user_update(db:Session,id:int,status:Optional[int]=None,password:Optional[st
     if password is not None:
         db_user.password = hash_password(password)
     if username is not None:
+        username = username.replace(" ","")
+        username = username.replace("+","")
         db_user.username = username
     if name is not None:
         db_user.name = name

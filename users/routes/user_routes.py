@@ -234,6 +234,8 @@ async def get_permissions(
 async def verify_user(
     form_data :user_sch.VerfiyOtp,
     db:Session=Depends(get_db)):
+    form_data.username = form_data.username.replace(" ","")
+    form_data.username = form_data.username.replace("+","")
     get_user = query.get_user(db=db,username=form_data.username)
     if get_user and get_user.otp == form_data.otp:
         otp =11111 #generate_otp()
