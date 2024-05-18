@@ -103,6 +103,8 @@ async def register(
 
     #get_user = query.get_user_byphone(db, email=form_data.email,phone_number=form_data.phone)
     #if get_user:
+    username = username.replace(" ","")
+    username = username.replace("+","")
     user = query.user_create(db=db,username=username,password=password,name=name,surname=surname,photo=photo,notification=notification,language=language,status=0,email=email,otp=otp)
 
     #current_user: user_sch.User = Depends(get_current_user)
