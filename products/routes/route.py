@@ -36,23 +36,126 @@ ProductRouter = APIRouter()
 
 @ProductRouter.post('/v1/shops', summary="Create Shop", tags=["Shops"],response_model=schema.ShopsList)
 async def creat_shop(
-        form_data:schema.Shopcreate,
+    name_uz:Annotated[str,Form()],
+    name_ru:Annotated[str,Form()]=None,
+    description:Annotated[str,Form()]=None,
+    goat:Annotated[bool,Form()]=None,
+    cow:Annotated[bool,Form()]=None,
+    camel:Annotated[bool,Form()]=None,
+    sheep:Annotated[bool,Form()]=None,
+    price:Annotated[float,Form()]=None,
+    status:Annotated[int,Form()]=None,
+    logo:UploadFile=None,
+    region_id:Annotated[int,Form()]=None,
+    portfolio:list[UploadFile]=None,
+    user_id:Annotated[int,Form()]=None,
         db: Session = Depends(get_db),
         current_user: user_sch.User = Depends(get_current_user)
 ):
-    if form_data.user_id is None:
-        form_data.user_id = current_user.id
-    return crud.create_shop(db=db, form_data=form_data)
+    if user_id is None:
+        user_id = current_user.id
+    if logo is not None:
+        folder_name = f"files/{generate_random_filename()+logo.filename}"
+        with open(folder_name, "wb") as buffer:
+            while True:
+                chunk = await logo.read(1024)
+                if not chunk:
+                    break
+                buffer.write(chunk)
+        logo = folder_name
+    form_data = schema.Shopcreate(
+        name_uz=name_uz,
+        name_ru=name_ru,
+        description=description,
+        goat=goat,
+        cow=cow,
+        camel=camel,
+        sheep=sheep,
+        price=price,
+        status=status,
+        logo=logo,
+        region_id=region_id,
+        user_id=user_id
+    )
+    query = crud.create_shop(db=db,form_data=form_data)
+    if portfolio is not None:
+        for file in portfolio:
+            folder_name = f"files/{generate_random_filename()+file.filename}"
+            with open(folder_name, "wb") as buffer:
+                while True:
+                    chunk = await file.read(1024)
+                    if not chunk:
+                        break
+                    buffer.write(chunk)
 
+            crud.create_files(db=db,shop_id=query.id,url=folder_name)
+    return query
+
+
+@ProductRouter.delete('/v1/shops/portfolio', summary="Delete portfolio", tags=["Shops"])
+async def delete_portfolio(
+        id:int,
+        db: Session = Depends(get_db),
+        current_user: user_sch.User = Depends(get_current_user)
+):
+    query = crud.delete_portfolio(db=db,id=id)
+    return query
 
 
 @ProductRouter.put('/v1/shops', summary=" Update Shop", tags=["Shops"], response_model=schema.ShopsList)
 async def update_shop(
-        form_data:schema.Shopupdate,
+        id:Annotated[int,Form()],
+        name_uz:Annotated[str,Form()]=None,
+        name_ru:Annotated[str,Form()]=None,
+        description:Annotated[str,Form()]=None,
+        goat:Annotated[bool,Form()]=None,
+        cow:Annotated[bool,Form()]=None,
+        camel:Annotated[bool,Form()]=None,
+        sheep:Annotated[bool,Form()]=None,
+        price:Annotated[str,Form()]=None,
+        status:Annotated[int,Form()]=None,
+        logo:UploadFile=None,
+        region_id:Annotated[int,Form()]=None,
+        user_id:Annotated[int,Form()]=None,
+        portfolio:list[UploadFile]=None,
         db: Session = Depends(get_db),
         current_user: user_sch.User = Depends(get_current_user)
 ):
+    if logo is not None:
+        folder_name = f"files/{generate_random_filename()+logo.filename}"
+        with open(folder_name, "wb") as buffer:
+            while True:
+                chunk = await logo.read(1024)
+                if not chunk:
+                    break
+                buffer.write(chunk)
+        logo = folder_name
+    form_data = schema.Shopupdate(
+        name_uz=name_uz,
+        name_ru=name_ru,
+        description=description,
+        goat=goat,
+        cow=cow,
+        camel=camel,
+        sheep=sheep,
+        price=price,
+        status=status,
+        logo=logo,
+        region_id=region_id,
+        user_id=user_id,
+        id=id
+    )
     query = crud.update_shop(db=db, form_data=form_data)
+    if portfolio is not None:
+        for file in portfolio:
+            folder_name = f"files/{generate_random_filename()+file.filename}"
+            with open(folder_name, "wb") as buffer:
+                while True:
+                    chunk = await file.read(1024)
+                    if not chunk:
+                        break
+                    buffer.write(chunk)
+            crud.create_files(db=db,shop_id=query.id,url=folder_name)
     return query
 
 @ProductRouter.get('/v1/shops', summary="Get all shops", tags=["Shops"], response_model=Page[schema.ShopsList])
@@ -123,6 +226,118 @@ async def update_region(
         db: Session = Depends(get_db),
         current_user: user_sch.User = Depends(get_current_user)):
     query = crud.update_region(db=db,form_data=form_data)
+
+
+    return query
+
+
+@ProductRouter.post('/v1/districts',summary='Create district',tags=['Countries'],response_model=schema.DistrictList)
+async def create_district(
+        form_data:schema.CreateDistrict,
+        db: Session = Depends(get_db),
+        current_user: user_sch.User = Depends(get_current_user)):
+    return crud.create_district(db=db,form_data=form_data)
+
+
+@ProductRouter.get('/v1/districts',summary='Get all districts',tags=['Countries'],response_model=Page[schema.DistrictList])
+async def get_districts(
+        name:Optional[str]=None,
+        id:Optional[int]=None,
+        status:Optional[int]=None,
+        region_id:Optional[int]=None,
+        db: Session = Depends(get_db),
+        current_user: user_sch.User = Depends(get_current_user)):
+    districts = crud.get_districts(db=db,name=name,id=id,status=status,region_id=region_id)
+    return paginate(districts)
+
+
+@ProductRouter.put('/v1/districts',summary='Update district',tags=['Countries'],response_model=schema.DistrictList)
+async def update_district(
+        form_data:schema.UpdateDistrict,
+        db: Session = Depends(get_db),
+        current_user: user_sch.User = Depends(get_current_user)):
+    query = crud.update_district(db=db,form_data=form_data)
+    return query
+
+
+
+@ProductRouter.post('/v1/category',summary='Create category',tags=['Categories'],response_model=schema.CategoryList)
+async def create_category(
+        sphera_id: Annotated[int, Form()],
+        name_uz:Annotated[str,Form()]=None,
+        name_ru:Annotated[str,Form()]=None,
+        status:Annotated[int,Form()]=None,
+        image:UploadFile=None,
+        db: Session = Depends(get_db),
+        current_user: user_sch.User = Depends(get_current_user)):
+    if image is not None:
+        folder_name = f"files/{generate_random_filename()+image.filename}"
+        with open(folder_name, "wb") as buffer:
+            while True:
+                chunk = await image.read(1024)
+                if not chunk:
+                    break
+                buffer.write(chunk)
+        image = folder_name
+    return crud.create_category(db=db,name_uz=name_uz,name_ru=name_ru,status=status,image=image,sphera_id=sphera_id)
+
+
+@ProductRouter.get('/v1/category',summary='Get all categories',tags=['Categories'],response_model=Page[schema.CategoryList])
+async def get_categories(
+        name:Optional[str]=None,
+        id:Optional[int]=None,
+        status:Optional[int]=None,
+        sphera_id:Optional[int]=None,
+        db: Session = Depends(get_db),
+        current_user: user_sch.User = Depends(get_current_user)):
+    categories = crud.get_categories(db=db,name=name,id=id,status=status,sphera_id=sphera_id)
+    return paginate(categories)
+
+
+@ProductRouter.put('/v1/category',summary='Update category',tags=['Categories'],response_model=schema.CategoryList)
+async def update_category(
+        id:Annotated[int,Form()],
+        sphere_id: Annotated[int, Form()]=None,
+        name_uz:Annotated[str,Form()]=None,
+        name_ru:Annotated[str,Form()]=None,
+        status:Annotated[int,Form()]=None,
+        image:UploadFile=None,
+        db: Session = Depends(get_db),
+        current_user: user_sch.User = Depends(get_current_user)):
+    if image is not None:
+        folder_name = f"files/{generate_random_filename()+image.filename}"
+        with open(folder_name, "wb") as buffer:
+            while True:
+                chunk = await image.read(1024)
+                if not chunk:
+                    break
+                buffer.write(chunk)
+        image = folder_name
+    return crud.update_category(db=db,id=id,name_uz=name_uz,name_ru=name_ru,status=status,image=image,sphere_id=sphere_id)
+
+
+
+@ProductRouter.post('/v1/sphere',summary='Create sphere',tags=['Spheras'],response_model=schema.SpheraList)
+async def create_sphere(
+        name:Annotated[str,Form()],
+        status:Annotated[int,Form()]=None,
+        db: Session = Depends(get_db),
+        current_user: user_sch.User = Depends(get_current_user)):
+    return crud.create_sphere(db=db,name=name,status=status)
+
+
+@ProductRouter.get('/v1/sphere',summary='Get all spheres',tags=['Spherars'],response_model=Page[schema.SpheraList])
+async def get_spheres(
+        name:Optional[str]=None,
+        id:Optional[int]=None,
+        status:Optional[int]=None,
+        db: Session = Depends(get_db),
+        current_user: user_sch.User = Depends(get_current_user)):
+    spheres = crud.get_spheras(db=db,name=name,id=id,status=status)
+    return paginate(spheres)
+
+
+
 
 
 

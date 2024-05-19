@@ -13,6 +13,7 @@ from database import Base
 from database import engine
 from users.routes.user_routes import user_router
 from products.routes.route import ProductRouter
+from products.routes.productroute import ProductCreateRouter
 #from routes import user_route,product_route
 
 app = FastAPI()
@@ -21,7 +22,8 @@ app.title = "Safia FastApi App"
 app.version = "0.0.1"
 
 app.include_router(user_router, tags=["User"])
-app.include_router(ProductRouter, tags=["Products"])
+app.include_router(ProductRouter)
+app.include_router(ProductCreateRouter)
 
 #app.include_router(user_router)
 from users.models import user_model

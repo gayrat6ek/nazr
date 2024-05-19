@@ -31,12 +31,26 @@ class Shops(Base):
     id = Column(BIGINT, primary_key=True, index=True)
     name_uz = Column(String, nullable=True)
     name_ru = Column(String, nullable=True)
+    description = Column(String, nullable=True)
+    goat = Column(Boolean,default=False)
+    cow = Column(Boolean,default=False)
+    camel = Column(Boolean,default=False)
+    sheep = Column(Boolean,default=False)
+    price = Column(Float,nullable=True)
     status = Column(Integer,default=1)
+    logo = Column(String,nullable=True)
     user_id = Column(BIGINT,ForeignKey('users.id'))
+    region_id = Column(BIGINT,ForeignKey('regions.id'))
+    region = relationship("Regions",back_populates="shop")
     user = relationship("Users",back_populates="shop")
     created_at = Column(DateTime(timezone=True), default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     product = relationship("Products",back_populates="shop")
+    file = relationship("Files",back_populates="shop")
+
+
+
+
 
 class Countries(Base):
     __tablename__ = "countries"
@@ -60,6 +74,7 @@ class Regions(Base):
     district = relationship("Districts",back_populates="region")
     created_at = Column(DateTime(timezone=True), default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    shop = relationship("Shops",back_populates="region")
 
 class Districts(Base):
     __tablename__ = "districts"
@@ -138,7 +153,7 @@ class Products(Base):
     id = Column(BIGINT, primary_key=True, index=True)
     title = Column(String, nullable=True)
     comment = Column(String,nullable=True)
-    price = Column(String,nullable=True)
+    price = Column(Float,nullable=True)
     status = Column(Integer, default=1)
     creator_id = Column(BIGINT, ForeignKey("users.id"))
     creator = relationship("Users",back_populates="product")
@@ -154,6 +169,8 @@ class Products(Base):
     created_at = Column(DateTime(timezone=True), default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     detail = relationship("Details",back_populates="product")
+    file = relationship("Files",back_populates="product")
+
 
 
 class Details(Base):
@@ -180,8 +197,14 @@ class Files(Base):
     id = Column(BIGINT, primary_key=True, index=True)
     image = Column(String, nullable=True)
     status = Column(Integer, default=1)
-    detail_id = Column(BIGINT,ForeignKey('details.id'))
+    detail_id = Column(BIGINT,ForeignKey('details.id'),nullable=True)
     detail = relationship("Details",back_populates="file")
+    shop_id = Column(BIGINT, ForeignKey("shops.id"),nullable=True)
+    shop = relationship("Shops",back_populates="file")
+    product_id = Column(BIGINT, ForeignKey("products.id"),nullable=True)
+    product = relationship("Products",back_populates="file")
+    created_at = Column(DateTime(timezone=True), default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
 
 
