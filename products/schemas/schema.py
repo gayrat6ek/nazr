@@ -67,8 +67,6 @@ class CountriesList(BaseModel):
     name_uz:Optional[str]=None
     name_ru:Optional[str]=None
     status:Optional[int]=None
-    created_at: Optional[datetime]=None
-    updated_at: Optional[datetime]=None
     class Config:
         orm_mode = True
 
@@ -97,8 +95,6 @@ class RegionList(BaseModel):
     status:Optional[int]=None
     country_id:Optional[int]=None
     country:Optional[CountriesList]=None
-    created_at: Optional[datetime]=None
-    updated_at: Optional[datetime]=None
 
     class Config:
         orm_mode = True
@@ -120,8 +116,6 @@ class ShopsList(BaseModel):
     logo: Optional[str]=None
     region_id: Optional[int]=None
     region:Optional[RegionList]=None
-    created_at: Optional[datetime]=None
-    updated_at: Optional[datetime]=None
     user:Optional[user_sch.User] =None
     file:Optional[list[FilesGet]]=None
     class Config:
@@ -148,8 +142,6 @@ class DistrictList(BaseModel):
     status:Optional[int]=None
     region_id:Optional[int]=None
     region:Optional[RegionList]=None
-    created_at: Optional[datetime]=None
-    updated_at: Optional[datetime]=None
 
     class Config:
         orm_mode = True
@@ -163,8 +155,6 @@ class SpheraList(BaseModel):
     id:int
     name:Optional[str]=None
     status:Optional[int]=None
-    created_at: Optional[datetime]=None
-    updated_at: Optional[datetime]=None
     class Config:
         orm_mode = True
 
@@ -176,7 +166,5 @@ class CategoryList(BaseModel):
     status:Optional[int]=None
     image:Optional[str]=None
     sphera:Optional[SpheraList]=None
-    created_at: Optional[datetime]=None
-    updated_at: Optional[datetime]=None
     class Config:
         orm_mode = True

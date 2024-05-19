@@ -56,8 +56,6 @@ class User(BaseModel):
     photo: Optional[str] = None
     notification: Optional[bool] = None
     status: int
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
 
     class Config:
         orm_mode = True

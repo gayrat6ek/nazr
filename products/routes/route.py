@@ -326,7 +326,7 @@ async def create_sphere(
     return crud.create_sphere(db=db,name=name,status=status)
 
 
-@ProductRouter.get('/v1/sphere',summary='Get all spheres',tags=['Spherars'],response_model=Page[schema.SpheraList])
+@ProductRouter.get('/v1/sphere',summary='Get all spheres',tags=['Spheras'],response_model=Page[schema.SpheraList])
 async def get_spheres(
         name:Optional[str]=None,
         id:Optional[int]=None,

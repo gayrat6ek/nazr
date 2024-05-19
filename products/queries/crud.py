@@ -166,11 +166,12 @@ def get_regions(db:Session,name,country_id,status,id):
     return query.all()
 
 
-def create_files(db:Session,url:Optional[str],shop_id:Optional[int]=None,detail_id:Optional[int]=None):
+def create_files(db:Session,url:Optional[str],shop_id:Optional[int]=None,detail_id:Optional[int]=None,product_id:Optional[int]=None):
     query = products.Files(
         image=url,
         shop_id=shop_id,
-        detail_id=detail_id
+        detail_id=detail_id,
+        product_id=product_id
     )
     db.add(query)
     db.commit()
@@ -292,3 +293,5 @@ def get_spheras(db:Session,name,status,id):
     if id is not None:
         query = query.filter(products.Spheras.id==id)
     return query.all()
+
+
