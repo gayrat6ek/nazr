@@ -110,3 +110,8 @@ class ForgetPassword(BaseModel):
 class VerfiyOtp(BaseModel):
     username: str
     otp: str
+
+
+class Login(BaseModel):
+    username: str
+    password: str

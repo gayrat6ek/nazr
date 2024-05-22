@@ -63,6 +63,35 @@ async def login(
     }
 
 
+@user_router.post("/v2/login", summary="Create access and refresh tokens for user",tags=["User"])
+async def login(
+    form_data: user_sch.Login,
+    db: Session = Depends(get_db),
+):
+    form_data.username = form_data.username.replace(" ","")
+    form_data.username = form_data.username.replace("+","")
+    user = query.get_user(db, form_data.username)
+    if user is None or user.status == 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Incorrect username or password or user is inactive",
+        )
+
+
+    hashed_pass = user.password
+    if not verify_password(form_data.password, hashed_pass):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Incorrect username or password",
+        )
+
+    return {
+        "access_token": create_access_token(user.username),
+        "refresh_token": create_refresh_token(user.username),
+        "user": {'id':user.id,'name':user.name,'surname':user.surname,'username':user.username,'photo':user.photo,'notification':user.notification,'language':user.language,'status':user.status,}
+    }
+
+
 
 
 
