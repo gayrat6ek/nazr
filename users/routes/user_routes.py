@@ -149,8 +149,8 @@ async def current_user(db:Session=Depends(get_db),current_user: user_sch.User = 
 
 @user_router.put('/update',summary="Reset password",tags=["User"])
 async def reset_password(
-    username:Annotated[str, Form()],
-    password:Annotated[str, Form()],
+    username:Annotated[str, Form()]=None,
+    password:Annotated[str, Form()]=None,
     name:Annotated[str, Form()]=None,
     surname:Annotated[str, Form()]=None,
     language:Annotated[str, Form()]=None,
