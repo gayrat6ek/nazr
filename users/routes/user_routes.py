@@ -259,7 +259,11 @@ async def verify_user(
         update_user = query.user_update(db=db,id=get_user.id,status=1)
         return {
         "access_token": create_access_token(get_user.username),
-        "refresh_token": create_refresh_token(get_user.username)}
+        "refresh_token": create_refresh_token(get_user.username),
+        "user": {'id': get_user.id, 'name': get_user.name, 'surname': get_user.surname, 'username': get_user.username,
+                     'photo': get_user.photo, 'notification': get_user.notification, 'language': get_user.language,
+                     'status': get_user.status, }
+        }
     else:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
