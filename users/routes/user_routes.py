@@ -131,7 +131,7 @@ async def register(
                     break
                 buffer.write(chunk)
         photo = folder_name
-    otp = 11111#generate_otp()
+    otp = 1111#generate_otp()
 
     #get_user = query.get_user_byphone(db, email=form_data.email,phone_number=form_data.phone)
     #if get_user:
@@ -205,7 +205,7 @@ async def forget_password(
 ):
     user = query.get_user(db=db,username=form_data.username)
     if user:
-        otp=11111#generate_otp()
+        otp=1111#generate_otp()
         query.user_update(db=db,status=0,otp=otp)
     else:
         raise HTTPException(
@@ -270,7 +270,7 @@ async def verify_user(
     form_data.username = form_data.username.replace("+","")
     get_user = query.get_user(db=db,username=form_data.username)
     if get_user and get_user.otp == form_data.otp:
-        otp =11111 #generate_otp()
+        otp =1111 #generate_otp()
         update_user = query.user_update(db=db,id=get_user.id,status=1)
         return {
         "access_token": create_access_token(get_user.username),
