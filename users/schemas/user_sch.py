@@ -13,6 +13,10 @@ class Actions(BaseModel):
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
+class Register(BaseModel):
+    username: str
+    password: str
+    name: Optional[str]=None
 
 class Pages(BaseModel):
     id: int

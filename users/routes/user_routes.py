@@ -113,31 +113,14 @@ async def refresh(
 
 @user_router.post("/register",response_model=user_sch.User, summary="Register a new user",tags=["User"])
 async def register(
-    username:Annotated[str, Form()],
-    password:Annotated[str, Form()],
-    name:Annotated[str, Form()]=None,
-    surname:Annotated[str, Form()]=None,
-    language:Annotated[str, Form()]=None,
-    email :Annotated[str,Form()]=None,
-    photo:UploadFile = None,
-    notification:Annotated[bool, Form()]=None,
+    form_data: user_sch.Register,
     db: Session = Depends(get_db)):
-    if photo is not None:
-        folder_name = f"files/{generate_random_filename()+photo.filename}"
-        with open(folder_name, "wb") as buffer:
-            while True:
-                chunk = await photo.read(1024)
-                if not chunk:
-                    break
-                buffer.write(chunk)
-        photo = folder_name
     otp = 1111#generate_otp()
 
     #get_user = query.get_user_byphone(db, email=form_data.email,phone_number=form_data.phone)
     #if get_user:
-    username = username.replace(" ","")
-    username = username.replace("+","")
-    user = query.user_create(db=db,username=username,password=password,name=name,surname=surname,photo=photo,notification=notification,language=language,status=0,email=email,otp=otp)
+
+    user = query.user_create(db=db,status = 0,otp=otp)
 
     #current_user: user_sch.User = Depends(get_current_user)
     return user

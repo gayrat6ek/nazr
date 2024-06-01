@@ -26,20 +26,15 @@ def get_user_byphone(db: Session, username:Optional[str]=None):
         query = query.filter(Users.username == username)
     return query.first()
 
-def user_create(db: Session,username,password,name,surname,photo,notification,language,status,email,otp):
-    hashed_password = hash_password(password)
+def user_create(db: Session,form_data:user_sch.Register,otp):
+    hashed_password = hash_password(form_data.password)
 
     db_user = Users(
-        username=username,
+        username=form_data.username,
         password=hashed_password,
-        name=name,
-        surname=surname,
-        photo=photo,
-        notification=notification,
-        language=language,
-        status=status,
+        name=form_data.name,
         otp=otp,
-        email=email
+
     )
     db.add(db_user)
     db.commit()
