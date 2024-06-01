@@ -117,9 +117,11 @@ async def register(
     db: Session = Depends(get_db)):
     otp = 1111#generate_otp()
 
+
     #get_user = query.get_user_byphone(db, email=form_data.email,phone_number=form_data.phone)
     #if get_user:
-
+    form_data.username = form_data.username.replace(" ","")
+    form_data.username = form_data.username.replace("+","")
     user = query.user_create(db=db,form_data=form_data,status = 0,otp=otp)
 
     #current_user: user_sch.User = Depends(get_current_user)
