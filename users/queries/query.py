@@ -26,7 +26,7 @@ def get_user_byphone(db: Session, username:Optional[str]=None):
         query = query.filter(Users.username == username)
     return query.first()
 
-def user_create(db: Session,form_data:user_sch.Register,otp):
+def user_create(db: Session,form_data:user_sch.Register,status,otp):
     hashed_password = hash_password(form_data.password)
 
     db_user = Users(
@@ -34,6 +34,7 @@ def user_create(db: Session,form_data:user_sch.Register,otp):
         password=hashed_password,
         name=form_data.name,
         otp=otp,
+        status=status
 
     )
     db.add(db_user)
