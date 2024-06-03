@@ -21,7 +21,8 @@ def create_shop(db:Session,form_data :schema.Shopcreate):
         description=form_data.description,
         price=form_data.price,
         region_id=form_data.region_id,
-        logo=form_data.logo
+        logo=form_data.logo,
+        sphera_id=form_data.sphera_id
     )
     db.add(query)
     db.commit()
@@ -67,6 +68,8 @@ def update_shop(db:Session,form_data :schema.Shopupdate):
             query.region_id = form_data.region_id
         if form_data.logo is not None:
             query.logo = form_data.logo
+        if form_data.sphera_id is not None:
+            query.sphera_id = form_data.sphera_id
         db.commit()
         db.refresh(query)
         return query

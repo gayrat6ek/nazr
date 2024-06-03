@@ -22,6 +22,7 @@ class Shopcreate(BaseModel):
     categories: Optional[list[int]]=None
     price: Optional[float]=None
     logo: Optional[str]=None
+    sphera_id: Optional[int]=None
     region_id: Optional[int]=None
     files:Optional[list[str]] = None
 
@@ -37,6 +38,7 @@ class Shopupdate(BaseModel):
     description: Optional[str]=None
     price: Optional[float]=None
     logo: Optional[str]=None
+    sphera_id: Optional[int]=None
     region_id: Optional[int]=None
     files:Optional[list[str]] = None
     categories: Optional[list[int]]=None
@@ -188,6 +190,7 @@ class ShopsList(BaseModel):
     user:Optional[user_sch.User] =None
     file:Optional[list[FilesGet]]=None
     shopcategory:Optional[list[ShopCategory]]=None
+    sphera:Optional[SpheraList]=None
     class Config:
         orm_mode = True
 
