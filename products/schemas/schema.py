@@ -19,13 +19,11 @@ class Shopcreate(BaseModel):
     user_id :Optional[int]=None
     status: Optional[int]=None
     description: Optional[str]=None
-    goat: Optional[bool]=None
-    cow: Optional[bool]=None
-    camel: Optional[bool]=None
-    sheep: Optional[bool]=None
+    categories: Optional[list[int]]=None
     price: Optional[float]=None
     logo: Optional[str]=None
     region_id: Optional[int]=None
+    files:Optional[list[str]] = None
 
 
 
@@ -37,13 +35,11 @@ class Shopupdate(BaseModel):
     status: Optional[int]=None
     id:int
     description: Optional[str]=None
-    goat: Optional[bool]=None
-    cow: Optional[bool]=None
-    camel: Optional[bool]=None
-    sheep: Optional[bool]=None
     price: Optional[float]=None
     logo: Optional[str]=None
     region_id: Optional[int]=None
+    files:Optional[list[str]] = None
+    categories: Optional[list[int]]=None
 
 
 
@@ -101,25 +97,8 @@ class RegionList(BaseModel):
 
 
 
-class ShopsList(BaseModel):
-    id:int
-    name_uz:Optional[str]=None
-    name_ru:Optional[str]=None
-    status: Optional[int]=None
-    user_id :Optional[int]=None
-    description: Optional[str]=None
-    goat: Optional[bool]=None
-    cow: Optional[bool]=None
-    camel: Optional[bool]=None
-    sheep: Optional[bool]=None
-    price: Optional[float]=None
-    logo: Optional[str]=None
-    region_id: Optional[int]=None
-    region:Optional[RegionList]=None
-    user:Optional[user_sch.User] =None
-    file:Optional[list[FilesGet]]=None
-    class Config:
-        orm_mode = True
+
+
 
 
 class CreateDistrict(BaseModel):
@@ -159,6 +138,27 @@ class SpheraList(BaseModel):
         orm_mode = True
 
 
+class  CategoryCreate(BaseModel):
+    name_uz:Optional[str]=None
+    name_ru:Optional[str]=None
+    status: Optional[int]=None
+    image:Optional[str]=None
+    sphera_id:Optional[int]=None
+
+
+
+class CategoryUpdate(BaseModel):
+    name_uz:Optional[str]=None
+    name_ru:Optional[str]=None
+    status: Optional[int]=None
+    image:Optional[str]=None
+    sphera_id:Optional[int]=None
+    id:int
+
+
+
+
+
 class CategoryList(BaseModel):
     id:int
     name_uz:Optional[str]=None
@@ -166,5 +166,29 @@ class CategoryList(BaseModel):
     status:Optional[int]=None
     image:Optional[str]=None
     sphera:Optional[SpheraList]=None
+    file : Optional[list[FilesGet]]=None
     class Config:
         orm_mode = True
+
+class ShopCategory(BaseModel):
+    id:int
+    category:Optional[CategoryList]=None
+
+class ShopsList(BaseModel):
+    id:int
+    name_uz:Optional[str]=None
+    name_ru:Optional[str]=None
+    status: Optional[int]=None
+    user_id :Optional[int]=None
+    description: Optional[str]=None
+    price: Optional[float]=None
+    logo: Optional[str]=None
+    region_id: Optional[int]=None
+    region:Optional[RegionList]=None
+    user:Optional[user_sch.User] =None
+    file:Optional[list[FilesGet]]=None
+    shopcategory:Optional[list[ShopCategory]]=None
+    class Config:
+        orm_mode = True
+
+

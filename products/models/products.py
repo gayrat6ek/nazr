@@ -47,6 +47,7 @@ class Shops(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     product = relationship("Products",back_populates="shop")
     file = relationship("Files",back_populates="shop")
+    shopcategory = relationship("ShopCategories",back_populates="shop")
 
 
 
@@ -61,6 +62,7 @@ class Countries(Base):
     region = relationship("Regions",back_populates="country")
     created_at = Column(DateTime(timezone=True), default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
 
 
 class Regions(Base):
@@ -112,6 +114,18 @@ class Spheras(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
 
+class ShopCategories(Base):
+    __tablename__ = "shop_categories"
+    id = Column(BIGINT, primary_key=True, index=True)
+    shop_id = Column(BIGINT,ForeignKey('shops.id'))
+    shop = relationship("Shops",back_populates="shopcategory")
+    category_id = Column(BIGINT,ForeignKey('categories.id'))
+    category = relationship("Categories",back_populates="categoryshop")
+    status = Column(Integer,default=1)
+    created_at = Column(DateTime(timezone=True), default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+
 
 class Categories(Base):
     __tablename__ = "categories"
@@ -119,11 +133,12 @@ class Categories(Base):
     name_uz = Column(String, nullable=True)
     name_ru = Column(String, nullable=True)
     status = Column(Integer, default=1)
-    image = Column(String, nullable=True)
     sphera_id = Column(BIGINT,ForeignKey('spheras.id'))
     sphera = relationship("Spheras",back_populates="category")
     created_at = Column(DateTime(timezone=True), default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    file = relationship("Files",back_populates="category")
+    categoryshop = relationship("ShopCategories",back_populates="category")
     product = relationship("Products",back_populates="category")
 
 
@@ -203,8 +218,13 @@ class Files(Base):
     shop = relationship("Shops",back_populates="file")
     product_id = Column(BIGINT, ForeignKey("products.id"),nullable=True)
     product = relationship("Products",back_populates="file")
+    category_id = Column(BIGINT, ForeignKey("categories.id"),nullable=True)
+    category = relationship("Categories",back_populates="file")
     created_at = Column(DateTime(timezone=True), default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+
+
 
 
 

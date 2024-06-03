@@ -34,65 +34,48 @@ from users.schemas import user_sch
 ProductRouter = APIRouter()
 
 
-@ProductRouter.post('/v1/shops', summary="Create Shop", tags=["Shops"],response_model=schema.ShopsList)
-async def creat_shop(
-    name_uz:Annotated[str,Form()],
-    name_ru:Annotated[str,Form()]=None,
-    description:Annotated[str,Form()]=None,
-    goat:Annotated[bool,Form()]=None,
-    cow:Annotated[bool,Form()]=None,
-    camel:Annotated[bool,Form()]=None,
-    sheep:Annotated[bool,Form()]=None,
-    price:Annotated[float,Form()]=None,
-    status:Annotated[int,Form()]=None,
-    logo:UploadFile=None,
-    region_id:Annotated[int,Form()]=None,
-    portfolio:list[UploadFile]=None,
-    user_id:Annotated[int,Form()]=None,
+@ProductRouter.post('/v1/files',summary='Create file',tags=['Files'])
+async def create_file(
+        file:UploadFile,
         db: Session = Depends(get_db),
         current_user: user_sch.User = Depends(get_current_user)
 ):
-    if user_id is None:
-        user_id = current_user.id
-    if logo is not None:
-        folder_name = f"files/{generate_random_filename()+logo.filename}"
-        with open(folder_name, "wb") as buffer:
-            while True:
-                chunk = await logo.read(1024)
-                if not chunk:
-                    break
-                buffer.write(chunk)
-        logo = folder_name
-    form_data = schema.Shopcreate(
-        name_uz=name_uz,
-        name_ru=name_ru,
-        description=description,
-        goat=goat,
-        cow=cow,
-        camel=camel,
-        sheep=sheep,
-        price=price,
-        status=status,
-        logo=logo,
-        region_id=region_id,
-        user_id=user_id
-    )
-    query = crud.create_shop(db=db,form_data=form_data)
-    if portfolio is not None:
-        for file in portfolio:
-            folder_name = f"files/{generate_random_filename()+file.filename}"
-            with open(folder_name, "wb") as buffer:
-                while True:
-                    chunk = await file.read(1024)
-                    if not chunk:
-                        break
-                    buffer.write(chunk)
+    file_extension = file.filename.split('.')[-1]
+    filename = generate_random_filename() + '.' + file_extension
+    folder_name = f"files/{filename}"
+    with open(folder_name, "wb") as buffer:
+        while True:
+            chunk = await file.read(1024)
+            if not chunk:
+                break
+            buffer.write(chunk)
+    return {"url":folder_name}
 
-            crud.create_files(db=db,shop_id=query.id,url=folder_name)
+
+@ProductRouter.post('/v1/shops', summary="Create Shop", tags=["Shops"],response_model=schema.ShopsList)
+async def creat_shop(
+        form_data:schema.Shopcreate,
+        db: Session = Depends(get_db),
+        current_user: user_sch.User = Depends(get_current_user)
+):
+    if form_data.user_id is None:
+        user_id = current_user.id
+    else:
+        user_id = form_data.user_id
+
+    form_data.user_id = user_id
+    query = crud.create_shop(db=db,form_data=form_data)
+    if form_data.files is not None:
+        for file in form_data.files:
+            crud.create_files(db=db,shop_id=query.id,url=file)
+
+    if form_data.categories is not None:
+        for category in form_data.categories:
+            crud.create_shopcategory(db=db,shop_id=query.id,category_id=category)
     return query
 
 
-@ProductRouter.delete('/v1/shops/portfolio', summary="Delete portfolio", tags=["Shops"])
+@ProductRouter.delete('/v1/file', summary="Delete File", tags=["Files"])
 async def delete_portfolio(
         id:int,
         db: Session = Depends(get_db),
@@ -104,59 +87,32 @@ async def delete_portfolio(
 
 @ProductRouter.put('/v1/shops', summary=" Update Shop", tags=["Shops"], response_model=schema.ShopsList)
 async def update_shop(
-        id:Annotated[int,Form()],
-        name_uz:Annotated[str,Form()]=None,
-        name_ru:Annotated[str,Form()]=None,
-        description:Annotated[str,Form()]=None,
-        goat:Annotated[bool,Form()]=None,
-        cow:Annotated[bool,Form()]=None,
-        camel:Annotated[bool,Form()]=None,
-        sheep:Annotated[bool,Form()]=None,
-        price:Annotated[str,Form()]=None,
-        status:Annotated[int,Form()]=None,
-        logo:UploadFile=None,
-        region_id:Annotated[int,Form()]=None,
-        user_id:Annotated[int,Form()]=None,
-        portfolio:list[UploadFile]=None,
+        form_data:schema.Shopupdate,
         db: Session = Depends(get_db),
         current_user: user_sch.User = Depends(get_current_user)
 ):
-    if logo is not None:
-        folder_name = f"files/{generate_random_filename()+logo.filename}"
-        with open(folder_name, "wb") as buffer:
-            while True:
-                chunk = await logo.read(1024)
-                if not chunk:
-                    break
-                buffer.write(chunk)
-        logo = folder_name
-    form_data = schema.Shopupdate(
-        name_uz=name_uz,
-        name_ru=name_ru,
-        description=description,
-        goat=goat,
-        cow=cow,
-        camel=camel,
-        sheep=sheep,
-        price=price,
-        status=status,
-        logo=logo,
-        region_id=region_id,
-        user_id=user_id,
-        id=id
-    )
+
+
     query = crud.update_shop(db=db, form_data=form_data)
-    if portfolio is not None:
-        for file in portfolio:
-            folder_name = f"files/{generate_random_filename()+file.filename}"
-            with open(folder_name, "wb") as buffer:
-                while True:
-                    chunk = await file.read(1024)
-                    if not chunk:
-                        break
-                    buffer.write(chunk)
-            crud.create_files(db=db,shop_id=query.id,url=folder_name)
+    if form_data.files is not None:
+        for file in form_data.files:
+
+            crud.create_files(db=db,shop_id=query.id,url=file)
+
+    if form_data.categories is not None:
+        for category in form_data.categories:
+            crud.create_shopcategory(db=db,shop_id=query.id,category_id=category)
     return query
+
+@ProductRouter.delete('/v1/shop/category',summary='Delete shop',tags=['Shops'])
+async def delete_shop_category(
+        id:int,
+        db: Session = Depends(get_db),
+        current_user: user_sch.User = Depends(get_current_user)
+):
+    query = crud.delete_shopcategory(db=db,id=id)
+    return query
+
 
 @ProductRouter.get('/v1/shops', summary="Get all shops", tags=["Shops"], response_model=Page[schema.ShopsList])
 async def get_shops(
@@ -263,23 +219,13 @@ async def update_district(
 
 @ProductRouter.post('/v1/category',summary='Create category',tags=['Categories'],response_model=schema.CategoryList)
 async def create_category(
-        sphera_id: Annotated[int, Form()],
-        name_uz:Annotated[str,Form()]=None,
-        name_ru:Annotated[str,Form()]=None,
-        status:Annotated[int,Form()]=None,
-        image:UploadFile=None,
+        form_data:schema.CategoryCreate,
         db: Session = Depends(get_db),
         current_user: user_sch.User = Depends(get_current_user)):
-    if image is not None:
-        folder_name = f"files/{generate_random_filename()+image.filename}"
-        with open(folder_name, "wb") as buffer:
-            while True:
-                chunk = await image.read(1024)
-                if not chunk:
-                    break
-                buffer.write(chunk)
-        image = folder_name
-    return crud.create_category(db=db,name_uz=name_uz,name_ru=name_ru,status=status,image=image,sphera_id=sphera_id)
+    query = crud.create_category(db=db, name_uz=form_data.name_uz, name_ru=form_data.name_ru, status=form_data.status, sphera_id=form_data.sphera_id)
+    if form_data.image is not None:
+        crud.create_files(db=db,category_id=query.id,url=form_data.image)
+    return query
 
 
 @ProductRouter.get('/v1/category',summary='Get all categories',tags=['Categories'],response_model=Page[schema.CategoryList])
@@ -296,24 +242,13 @@ async def get_categories(
 
 @ProductRouter.put('/v1/category',summary='Update category',tags=['Categories'],response_model=schema.CategoryList)
 async def update_category(
-        id:Annotated[int,Form()],
-        sphere_id: Annotated[int, Form()]=None,
-        name_uz:Annotated[str,Form()]=None,
-        name_ru:Annotated[str,Form()]=None,
-        status:Annotated[int,Form()]=None,
-        image:UploadFile=None,
+        form_data:schema.CategoryUpdate,
         db: Session = Depends(get_db),
         current_user: user_sch.User = Depends(get_current_user)):
-    if image is not None:
-        folder_name = f"files/{generate_random_filename()+image.filename}"
-        with open(folder_name, "wb") as buffer:
-            while True:
-                chunk = await image.read(1024)
-                if not chunk:
-                    break
-                buffer.write(chunk)
-        image = folder_name
-    return crud.update_category(db=db,id=id,name_uz=name_uz,name_ru=name_ru,status=status,image=image,sphere_id=sphere_id)
+    if form_data.image is not None:
+        crud.create_files(db=db,category_id=form_data.id,url=form_data.image)
+
+    return crud.update_category(db=db,id=form_data.id,name_uz=form_data.name_uz,name_ru=form_data.name_ru,status=form_data.status,sphera_id=form_data.sphera_id)
 
 
 

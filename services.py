@@ -141,7 +141,7 @@ def verify_refresh_token(refresh_token: str) -> Union[str, None]:
 
 
 
-def generate_random_filename(length=20):
+def generate_random_filename(length=40):
     # Define the characters you want to use in the random filename
     characters = string.ascii_letters + string.digits
 
